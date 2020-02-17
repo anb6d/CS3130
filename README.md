@@ -1,1 +1,2 @@
-# CS3130
+# CS3130 - HW3
+# Jacob, Samuel, Anna
