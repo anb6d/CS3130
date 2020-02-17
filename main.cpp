@@ -14,33 +14,103 @@
 //[C++ or Java ?? I'm okay with either!]
 
 #include <iostream>
+#include <cstdlib>
+#include <time.h>
+#include <vector>
+
 using namespace std;
+
+//structure to store city coordinates-data (x,y)
+struct CityData {
+    int x, y, digit; 
+    //digit to present each city (0,1,2,...)
+    CityData(int digit_, int x_, int y_)
+        : digit(digit_), x(x_), y(y_)
+    { }
+};
 
 int main()
 {
-    int n, k; 
+    int n, k, x, y; //coordinates (x,y)
+    int row, column; //for grid
+    int input_check = 0;
     
     //Briefly explain program and then prompt input from user
     cout << "TSP: Assume a traveling salesperson has 'K' cities to visit to sell widgets. ";
     cout << "The salesperson will start and stop at the same city.\n" <<
-            "Assuming the salespereson will stop at 1 address per city, what order of cities gives the shortest" <<
+            "Assuming the salespereson will stop at 1 address per city, what order of cities give the shortest " <<
             "total distance(time) for the entire trip?\n" << endl;
-    cout << "Enter a value for K(number of cities to be visited):\n";
-    cin >> k; //number of cities
-    cout << "Enter a value for N(length of square grid):\n";
-    cin >> n; //grid length
     
     //[INPUT CHECK]
-    //Valid input range: ( 4 <= K <=9 ) and ( 10 <= N <= 30 )
-    //check if input for n and k is valid
-    //if not valid: re-prompt user for input
+    while (input_check == 0) {
+        //prompt user
+        cout << "Enter a value for K(number of cities to be visited): [Min: 4, Max: 9]\n";
+        cin >> k; //number of cities
+        cout << "Enter a value for N(length of square grid): [Min: 10, Max: 30]\n";
+        cin >> n; //grid length
+        
+        //Valid input range: ( 4 <= K <=9 ) and ( 10 <= N <= 30 )
+        if((k>=4 && k<=9) && (n>=10 && n<=30)) {
+            //exit while loop if valid
+            input_check = input_check + 1;
+        } else {
+            //Error message for invalid input & reprompt user
+            cout << "\nError! Values must be: ( 4 <= K <=9 ) and ( 10 <= N <= 30 ).\n";
+        }
+    }
 
     //if valid:
-    //random select integer coordinates for each K(cities) 
-    //Use text to show user where each city(K) appear on grid. [assign numbers to each city maybe?]
+    cout << "\n[ Starting Information ]";
+    cout << "\nTotal number of cities to be visited: " << k << endl;
+    cout << "Grid Size: " << n << "x" << n << endl;
+    cout << "Each city will now be assigned a number from 0 to " << (k-1) << ".";
+            
+    srand(time(0)); //seed for rand function
+    vector<CityData> arrCity;
+    arrCity.reserve(k);
     
+    //randomizing coordinates (x,y) for each k(city)
+    for(int i=0; i<k; i++) {
+        arrCity.emplace_back(i, rand() % n, rand() % n);
+    }
+    
+    //loop to display coordinates for each city
+    cout << "\n\nHere are the (x,y) coordinates for each city:\n";
+    for(int k=0; k< arrCity.size(); k++) {
+        //[k].digit = City(k) , [k].x = x coordinate at [k], [k].y = y coordinate at [k]
+        cout << "City " << arrCity[k].digit << ": (" << arrCity[k].x << "," << arrCity[k].y << ")" << endl;
+    }    
+    
+    cout << "\nGrid with city locations:\n";
+    //loop to check city location on grid
+    for (row=0; row<n; row++) {
+        for (column=0; column<n; column++) {
+            int w = -1;
+            for (int k = 0; k < arrCity.size(); k++) {
+                //check where (x,y) match (row, column) for each city[k] to display on grid
+                if ((row == arrCity[k].y) && (column == arrCity[k].x)) {
+                    w = k;
+                }
+            }
+            
+            //display grid with digits representing each city
+            if (w>=0) {
+                //grid cells containing a city
+                cout << "|" << arrCity[w].digit;
+            } else {
+                //empty grid cells
+                cout << "|_";
+            }
+        }
+        cout << "\n";
+    }
+    
+    cout << "\n[NOTE]";
+    cout << "\nRows (left to right) starts from 0 to " << (n-1) << endl;
+    cout << "Columns (top to bottom) 0 to " << (n-1) << endl;
+
     //[CALCUATIONS]
-    //Next:
+    cout << "\n[ Calculating Shortest Route ]\n";
     //Calculate distance from each city to the other cities
     //Print out matrix that includes each of these distances (real numbers displayed w/at least one decimal place)
     //Note: Program should store better precision of these calculations
