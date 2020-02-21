@@ -1,4 +1,4 @@
-# CS3130 - HW3
+# CS4500 - HW3
 # Jacob, Samuel, Anna
 # Tasks:
 #  1 - Input prompting/validation
