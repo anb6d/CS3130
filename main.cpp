@@ -14,7 +14,9 @@
 //[C++ or Java ?? I'm okay with either!]
 
 #include <iostream>
+#include <algorithm>
 #include <cstdlib>
+#include <math.h>
 #include <time.h>
 #include <vector>
 
@@ -27,7 +29,72 @@ struct CityData {
     CityData(int digit_, int x_, int y_)
         : digit(digit_), x(x_), y(y_)
     { }
+    
+    bool operator <(CityData otherCity) const
+    {
+        return digit < otherCity.digit;
+    }
+    
+    double distanceFrom(CityData otherCity)
+    {
+        return sqrt(pow((x - otherCity.x), 2) + pow((y - otherCity.y), 2));
+    }
 };
+
+
+void print(vector<CityData> const &cityVector)
+{
+    for (int i = 0; i < cityVector.size(); i++)
+    {
+        cout << cityVector[i].digit << " ";
+    }
+}
+
+void getPermutations(vector<CityData> cityVector)
+{
+    CityData firstCity = cityVector.front();
+    cityVector.erase(cityVector.begin());
+    
+    do {
+        cityVector.insert(cityVector.begin(), firstCity);
+        cityVector.push_back(firstCity);
+        print(cityVector);
+        cityVector.erase(cityVector.begin());
+        cityVector.pop_back();
+        cout << "\n";
+    } while (next_permutation(cityVector.begin(), cityVector.end()));
+}
+
+vector<vector<double>> getDistanceMatrix(vector<CityData> cityVector)
+{
+    int len = cityVector.size();
+    
+    vector<vector<double>> distanceMatrix(len, vector<double>(0, 0));
+    
+    for (int i = 0; i < len; i++)
+    {
+        for (int j = 0; j < len; j++)
+        {
+            distanceMatrix[i].push_back(cityVector[i].distanceFrom(cityVector[j]));
+        }
+    }
+    
+    return distanceMatrix;
+}
+
+void printDistanceMatrix(vector<vector<double>> distanceMatrix)
+{
+    cout.precision(2);
+    
+    for (int i = 0; i < distanceMatrix.size(); i++)
+    {
+        for (int j = 0; j < distanceMatrix[i].size(); j++)
+        {
+            cout << fixed << distanceMatrix[i][j] << " ";
+        }
+        cout << "\n";
+    }
+}
 
 int main()
 {
@@ -42,22 +109,36 @@ int main()
             "total distance(time) for the entire trip?\n" << endl;
     
     //[INPUT CHECK]
-    while (input_check == 0) {
+    do {
         //prompt user
         cout << "Enter a value for K(number of cities to be visited): [Min: 4, Max: 9]\n";
         cin >> k; //number of cities
-        cout << "Enter a value for N(length of square grid): [Min: 10, Max: 30]\n";
-        cin >> n; //grid length
         
-        //Valid input range: ( 4 <= K <=9 ) and ( 10 <= N <= 30 )
-        if((k>=4 && k<=9) && (n>=10 && n<=30)) {
+        if (k>=4 && k<=9) {
             //exit while loop if valid
             input_check = input_check + 1;
         } else {
             //Error message for invalid input & reprompt user
-            cout << "\nError! Values must be: ( 4 <= K <=9 ) and ( 10 <= N <= 30 ).\n";
+            cout << "\nError! Value must be: 4 <= K <=9\n";
         }
-    }
+    } while (input_check == 0);
+    
+    input_check = 0;
+    
+    do {
+        //prompt user
+        cout << "Enter a value for N(length of square grid): [Min: 10, Max: 30]\n";
+        cin >> n; //grid length
+        
+        //Valid input range: 10 <= N <= 30
+        if (n>=10 && n<=30) {
+            //exit while loop if valid
+            input_check = input_check + 1;
+        } else {
+            //Error message for invalid input & reprompt user
+            cout << "\nError! Values must be: 10 <= N <= 30 \n";
+        }
+    } while (input_check == 0);
 
     //if valid:
     cout << "\n[ Starting Information ]";
@@ -104,6 +185,11 @@ int main()
         }
         cout << "\n";
     }
+    cout << "\n";
+    getPermutations(arrCity);
+    
+    vector<vector<double>> distanceMatrix = getDistanceMatrix(arrCity);
+    printDistanceMatrix(distanceMatrix);
     
     cout << "\n[NOTE]";
     cout << "\nRows (left to right) starts from 0 to " << (n-1) << endl;
